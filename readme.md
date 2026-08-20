@@ -13,6 +13,7 @@ _yeah, its clear that example is nothing useful. idea to showcase_
 
 ## make
 for flawless experience you need to install `make`
+main commands listed in here, more check `Makefile`
 
 ## CI\CD
 inside of `docker` dir there's `hooks` that is configured for container building at hub.docker.com<br>
@@ -20,13 +21,6 @@ _Note that migrations part commented and you may need to uncomment/create own in
 
 ## local docker
 docker should be installed to run commands below
-
-### my user is not 1000
-if you have user differ from 1000 (check by `echo $UID`), prepend any following docker-compose commands by `USER_ID=${UID}`
-like
-```
-USER_ID=${UID} docker compose up -d
-```
 
 ### to build and launch
 ```

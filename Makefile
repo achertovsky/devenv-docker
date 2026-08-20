@@ -6,7 +6,9 @@ USER_ID=$(shell id -u)
 
 # Build and launch the project
 build:
+	@$(MAKE) purge
 	@echo "Building and launching the project..."
+	USER_ID=$(USER_ID) docker compose build --no-cache
 	USER_ID=$(USER_ID) docker compose up -d --force-recreate
 
 purge:
@@ -24,14 +26,14 @@ stop:
 	USER_ID=$(USER_ID) docker compose stop
 
 # Enter the container with xdebug enabled
-enter-debug:
+enter-debug bash-debug:
 	@echo "Entering the container with xdebug enabled..."
 	docker exec -u$(USER_ID) -it -w /var/www/html -e XDEBUG_MODE=debug $(CONTAINER_NAME) /bin/bash
 
 # Enter the container without xdebug
-enter:
+enter bash:
 	@echo "Entering the container without xdebug..."
-	docker exec -u$(USER_ID) -it -w /var/www/html $(CONTAINER_NAME) /bin/bash
+	docker exec -u$(USER_ID) -it -w /var/www/html -e XDEBUG_MODE=off $(CONTAINER_NAME) /bin/bash
 
 healthcheck:
 	@echo "Tests and static analyzing of application..."
@@ -39,7 +41,13 @@ healthcheck:
 		echo "Container $(CONTAINER_NAME) is not running. Run it by make build or make start "; \
 		exit 1; \
 	fi
-	docker exec -u$(USER_ID) -it -w /var/www/html $(CONTAINER_NAME) /bin/bash ./healthcheck.sh
+	docker exec -u$(USER_ID) -it -w /var/www/html -e XDEBUG_MODE=off $(CONTAINER_NAME) /bin/bash ./healthcheck.sh
+
+git-push:
+	@echo "Running healthcheck..."
+	@$(MAKE) healthcheck
+	@echo "Pushing current branch..."
+	git push origin $$(git rev-parse --abbrev-ref HEAD)
 
 uninstall_example:
 	@if ! docker ps --format '{{.Names}}' | grep -q "^$(CONTAINER_NAME)\$$"; then \
