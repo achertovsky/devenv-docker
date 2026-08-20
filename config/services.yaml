@@ -60,3 +60,7 @@ services: &services
 
     Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory:
         class: Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory
+
+when@test:
+    framework:
+        test: true
